@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<package version="2.0" 
+      xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookId">
+      <metadata 
+            xmlns:dc="http://purl.org/dc/elements/1.1/" 
+            xmlns:opf="http://www.idpf.org/2007/opf">
+            <dc:title>Tale of Two Cities</dc:title>
+            <dc:creator opf:role="aut">Charles Dickens</dc:creator>
+            <meta name="price" content="USD 19.99" />
+            <meta name="cover" content="cover-img"/>
+      </metadata>
+      <manifest>
+            <item id="cover-img" href="cover.png" media-type="image/jpeg" />
+            <item id="intro" href="intro.html" media-type="application/xhtml+xml" />
+            <item id="c1" href="chap1.html" media-type="application/xhtml+xml" />
+            <item id="c1-answerkey" href="chap1-answerkey.html" media-type="application/xhtml+xml" />
+            <item id="c2" href="chap2.dtb" media-type="application/x-dtbook+xml" />
+            <item id="c2-answerkey" href="chap2-answerkey.html" media-type="application/xhtml+xml" />
+            <item id="c3" href="chap3.html" media-type="application/xhtml+xml" />
+            <item id="c3-answerkey" href="chap3-answerkey.html" media-type="application/xhtml+xml" />
+            <item id="note" href="note.html" media-type="application/xhtml+xml" />
+            <item id="f1" href="fig1.jpg" media-type="image/jpeg" />
+            <item id="f2" href="fig2.jpg" media-type="image/jpeg" />
+            <item id="f3" href="fig3.jpg" media-type="image/jpeg" />
+            <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml" />
+      </manifest>
+      <spine toc="ncx">
+            <itemref idref="intro" />
+            <itemref idref="c1" />
+            <itemref idref="c1-answerkey" linear="no" />
+            <itemref idref="c2" />
+            <itemref idref="c2-answerkey" linear="no" />
+            <itemref idref="c3" />
+            <itemref idref="c3-answerkey" linear="no" />
+            <itemref idref="note" linear="no" />
+      </spine>
+</package>

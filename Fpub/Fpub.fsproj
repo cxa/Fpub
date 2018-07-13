@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>com.realazy.fub</PackageId>
+    <Title>Fpub — F# EPUB Parser</Title>
+    <Version>0.1.4</Version>
+    <description>
+      Library for reading EPUB file format built on top of .NET Standard 2.0 and F#. Safe, simple and extendable.
+    </description>
+    <Authors>Realazy Xian-an CHEN</Authors>
+    <Copyright>2018 © Realazy Xian-an CHEN</Copyright>
+    <PackageLicenseUrl>https://github.com/cxa/Fpub/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/cxa/Fpub</PackageProjectUrl>
+    <PackageTags>EPUB, ebook, book, parser, FSharp, F#</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Internal.fs" />
+    <Compile Include="Element.fs" />
+    <Compile Include="TocItem.fs" />
+    <Compile Include="Nav.fs" />
+    <Compile Include="Ncx.fs" />
+    <Compile Include="Package.fs" />
+    <Compile Include="Container.fs" />
+  </ItemGroup>
+</Project>
