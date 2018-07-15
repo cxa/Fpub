@@ -17,13 +17,16 @@ module Package =
     let getUniqueIdentifier (T element) =
       Element.evalToString "string(../@unique-identifier)" element
       |> Result.bind (fun pkguid ->
-        Element.evalToString (sprintf """string(dc:identifier[@id="%s"])""" pkguid) element
+        Element.evalToString 
+          (sprintf """string(dc:identifier[@id="%s"])""" pkguid) element
       )
 
     let getReleaseIdentifier metadata =
       let (T element) = metadata
       let expr = """string(meta[@property="dcterms:modified"])"""
-      match (getUniqueIdentifier metadata), (Element.evalToString expr element) with
+      let uid = getUniqueIdentifier metadata
+      let moddate = Element.evalToString expr element
+      match uid, moddate with
       | Ok uid, Ok moddate -> Ok <| uid + "@" + moddate
       | Error e, _
       | _, Error e -> Error e
@@ -125,7 +128,8 @@ module Package =
         |> Result.map (DirContext<_>.Create' dir >> Item.T)
       let getEpub2Cover () =
         element
-        |> Element.evalToString """string(../metadata/meta[@name="cover"]/@content)"""
+        |> Element.evalToString 
+          """string(../metadata/meta[@name="cover"]/@content)"""
         |> Result.bind (flip getItemById t)
       getEpub3Cover ()
       |> Result.mapOr Ok (getEpub2Cover ())
@@ -237,6 +241,7 @@ module Package =
     getSpine t
     |> Result.map Spine.getElement
     |> Result.bind (Element.getAttribute "toc")
-    |> Result.map (fun id -> sprintf """string(manifest/item[@id="%s"]/@href)""" id)
+    |> Result.map (fun id -> 
+       sprintf """string(manifest/item[@id="%s"]/@href)""" id)
     |> Result.bind (fun xpath -> t |> getElement |> Element.evalToString xpath)
     |> Result.map (t |> getDirectory |> getResourcePath)

@@ -22,9 +22,10 @@ module Ncx =
         (fun title href ->
           Some
             { Title = title
-            ; ResourcePath = IO.Path.Combine (dir, href) |> Some
-            ; SubItems = Element.getAllElements "navPoint" np |> processNavPoints dir
-            }
+              ResourcePath = IO.Path.Combine (dir, href) |> Some
+              SubItems = 
+                Element.getAllElements "navPoint" np 
+                |> processNavPoints dir }
         )
         None
         (Element.evalToString "string(navLabel/text)" np)

@@ -40,7 +40,8 @@ module Container =
       xnm.AddNamespace ("ocf", "urn:oasis:names:tc:opendocument:xmlns:container")
       nav.Select ("//ocf:rootfile", xnm)
       |> Seq.cast<XPathNavigator>
-      |> Seq.map (fun nav -> nav.GetAttribute("full-path", String.Empty).Trim ())
+      |> Seq.map (fun nav -> 
+         nav.GetAttribute("full-path", String.Empty).Trim ())
     )
 
   let getDefaultPackage container =

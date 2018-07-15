@@ -20,10 +20,9 @@ module Element =
         xnm.AddNamespace (prefix, uri)
       )
       { navigator = navigator
-      ; namespaces = namespaces
-      ; namespaceManager = xnm
-      ; defaultNamespacePrefix = namespaces |> List.head |> fst
-      }
+        namespaces = namespaces
+        namespaceManager = xnm
+        defaultNamespacePrefix = namespaces |> List.head |> fst }
 
     member this.NormalizeXPath (xpath:string) =
       let defaultNsPrefix = this.defaultNamespacePrefix
@@ -35,12 +34,18 @@ module Element =
           | "" -> ""
           | s ->
             if s.Contains "::" then
-              let regex = Regex (@"(?<!attribute)(\:\:)([a-z*][\w\d-_\.]*)([=\s\[\]]|$)", RegexOptions.IgnoreCase)
+              let regex = 
+                Regex (@"(?<!attribute)(\:\:)([a-z*][\w\d-_\.]*)([=\s\[\]]|$)",
+                       RegexOptions.IgnoreCase)
               regex.Replace(s, sprintf "$1%s:$2$3" defaultNsPrefix)
             else
-              let regex1 = Regex (@"(^|\()([a-z*][\w\d-_\.]*)([\)\[]|$)", RegexOptions.IgnoreCase)
+              let regex1 =
+                Regex (@"(^|\()([a-z*][\w\d-_\.]*)([\)\[]|$)",
+                       RegexOptions.IgnoreCase)
               let s1 = regex1.Replace(s, sprintf "$1%s:$2$3" defaultNsPrefix)
-              let regex2 = Regex (@"(\[)([a-z*][\w\d-_\.]*)([\]=])", RegexOptions.IgnoreCase)
+              let regex2 =
+                Regex (@"(\[)([a-z*][\w\d-_\.]*)([\]=])",
+                       RegexOptions.IgnoreCase)
               regex2.Replace(s1, sprintf "$1%s:$2$3" defaultNsPrefix)
           )
         |> String.concat "/"

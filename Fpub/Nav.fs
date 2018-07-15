@@ -38,8 +38,10 @@ module Nav =
       |> Result.mapOr (fun el ->
         Some
           { Title = Element.getValue el
-          ; ResourcePath = Element.getAttribute "href" el |> Result.mapOr (fun h -> IO.Path.Combine (dir, h) |> Some) None
-          ; SubItems = Element.getAllElements "ol/li" li |> processLis dir
+            ResourcePath = 
+              Element.getAttribute "href" el 
+              |> Result.mapOr (fun h -> IO.Path.Combine (dir, h) |> Some) None
+            SubItems = Element.getAllElements "ol/li" li |> processLis dir
           }
       ) None
 
@@ -49,10 +51,9 @@ module Nav =
   module Landmarks =
     type Item =
       { Title: string
-      ; Type: string
-      ; ResourcePath: string
-      ; SubItems: Item array
-      }
+        Type: string
+        ResourcePath: string
+        SubItems: Item array }
 
     type T = internal T of DirContext<Element.T>
 
@@ -72,14 +73,15 @@ module Nav =
     and private processLi dir li =
       Element.getFirstElement "a" li
       |> Result.mapOr (fun a ->
-        Result.mapOr2 (fun t h ->
-          Some
+        Result.mapOr2 (fun t h -> 
+          Some 
             { Title = Element.getValue a
-            ; Type = t
-            ; ResourcePath = IO.Path.Combine (dir, h)
-            ; SubItems = Element.getAllElements "ol/li" li |> processLis dir
-            }
-        ) None (Element.getAttribute "epub:type" a) (Element.getAttribute "href" a)
+              Type = t
+              ResourcePath = IO.Path.Combine (dir, h)
+              SubItems = Element.getAllElements "ol/li" li |> processLis dir }
+          ) 
+          None
+          (Element.getAttribute "epub:type" a) (Element.getAttribute "href" a)
       ) None
     let getItems (T dc) =
       processLis dc.Dir <| Element.getAllElements "ol/li" dc.Context

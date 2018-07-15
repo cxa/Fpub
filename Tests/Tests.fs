@@ -54,7 +54,9 @@ let tests =
           |> Result.bind Container.getPackagePaths
           |> Result.map Seq.toList
         match pathsR with
-        | Ok paths -> Expect.equal (List.head paths) "EPUB/package.opf" "Should get package path"
+        | Ok paths -> 
+          Expect.equal 
+            (List.head paths) "EPUB/package.opf" "Should get package path"
         | Error e -> failtest e.Message
 
       testCase "get package" <| fun _ ->
@@ -99,26 +101,45 @@ let tests =
     testList "Metadata" [
       testCase "get all identifiers" <| fun _ ->
         let pkg = Package.withFile "assets/test.opf" ""
-        let idsR = pkg |> Result.bind Package.getMetadata |> Result.bind Package.Metadata.getAllIdentifiers
+        let idsR = 
+          pkg 
+          |> Result.bind Package.getMetadata 
+          |> Result.bind Package.Metadata.getAllIdentifiers
         match idsR with
-        | Ok ids -> Expect.sequenceEqual ids (Seq.ofList ["org.idpf.epub31"; "9780123456789"]) "should get all identifiers"
+        | Ok ids -> 
+          Expect.sequenceEqual 
+            ids 
+            (Seq.ofList ["org.idpf.epub31"; "9780123456789"])
+            "should get all identifiers"
         | Error e -> failtest e.Message
 
       testCase "get scheme identifiers" <| fun _ ->
         let pkg = Package.withFile "assets/test.opf" ""
-        let idsR = pkg |> Result.bind Package.getMetadata |> Result.bind Package.Metadata.getSchemeIdentifiers
+        let idsR = 
+          pkg 
+          |> Result.bind Package.getMetadata 
+          |> Result.bind Package.Metadata.getSchemeIdentifiers
         match idsR with
-        | Ok ids ->Expect.equal (Map.find "isbn" ids) "9780123456789" "should contains uid in identifiers"
+        | Ok ids ->
+          Expect.equal 
+            (Map.find "isbn" ids) 
+            "9780123456789" 
+            "should contains uid in identifiers"
         | Error e -> failtest e.Message
 
       testCase "get unique identifier" <| fun _ ->
-        let pkguid = makeMetadata () |> Result.bind Package.Metadata.getUniqueIdentifier
+        let pkguid = 
+          makeMetadata () |> Result.bind Package.Metadata.getUniqueIdentifier
         match pkguid with
-        | Ok puid -> Expect.equal puid "org.idpf.epub31" <| "uid should be org.idpf.epub31, but got" + puid
+        | Ok puid ->
+          Expect.equal 
+            puid "org.idpf.epub31" 
+            <| "uid should be org.idpf.epub31, but got" + puid
         | Error e -> failtest e.Message
 
       testCase "get release identifier" <| fun _ ->
-        let rid =  makeMetadata () |> Result.bind Package.Metadata.getReleaseIdentifier
+        let rid = 
+          makeMetadata () |> Result.bind Package.Metadata.getReleaseIdentifier
         match rid with
         | Ok id ->
           Expect.equal
@@ -142,14 +163,19 @@ let tests =
       testCase "get creators" <| fun _ ->
         let creators = makeMetadata () |> Result.bind Metadata.getCreators
         match creators with
-        | Ok c -> Expect.sequenceEqual c ["Markus Gylling"; "Tzviya Siegman"; "Matt Garrish"] "should get creators"
+        | Ok c -> 
+          Expect.sequenceEqual 
+            c 
+            ["Markus Gylling"; "Tzviya Siegman"; "Matt Garrish"]
+            "should get creators"
         | Error e -> failtest e.Message
     ]
 
     testList "Manifest" [
       testCase "get Manifetst Items" <| fun _ ->
         match getManifestItems () with
-        | Ok items -> Expect.equal (Seq.length items) 16 "Manifest items should be 16"
+        | Ok items ->
+          Expect.equal (Seq.length items) 16 "Manifest items should be 16"
         | Error e -> failtest e.Message
 
       testCase "get item attributes" <| fun _ ->
@@ -157,7 +183,8 @@ let tests =
         let id = item |> Result.bind Package.Manifest.Item.getId
         let href = item |> Result.bind Package.Manifest.Item.getHref
         let mt = item |> Result.bind Package.Manifest.Item.getMediaType
-        let props = item |> Result.bind (Package.Manifest.Item.getAttribute "properties")
+        let props = 
+          item |> Result.bind (Package.Manifest.Item.getAttribute "properties")
         match id, href, mt, props with
         | Ok i, Ok h, Ok m, Ok p ->
           Expect.equal
@@ -165,7 +192,8 @@ let tests =
             ("nav", "nav.xhtml", "application/xhtml+xml", "nav")
             """item props should be ("nav", "nav.xhtml", "application/xhtml+xml", "nav")"""
         | _ -> failtest "Fail to get item id, href, media type, and properties"
-        let fallback = item |> Result.bind (Package.Manifest.Item.getAttribute "fallback")
+        let fallback = 
+          item |> Result.bind (Package.Manifest.Item.getAttribute "fallback")
         Expect.isError fallback "item fallback should be none"
 
       testCase "get item by id" <| fun _ ->
@@ -176,7 +204,10 @@ let tests =
           |> Result.bind (Package.Manifest.getItemById id)
           |> Result.bind Package.Manifest.Item.getId
         match idr with
-        | Ok i -> Expect.equal i id <| sprintf "get item by id %A, resutl item id should be %A" id id
+        | Ok i -> 
+          Expect.equal
+            i id
+            <| sprintf "get item by id %A, resutl item id should be %A" id id
         | _ -> failtest "Fail to get item by id"
 
       testCase "get epub 3 cover image href" <| fun _ ->
@@ -212,7 +243,8 @@ let tests =
           |> Result.bind Package.getSpine
           |> Result.bind Package.Spine.getItemRefs
          match itemrefsR with
-         | Ok refs -> Expect.equal (Seq.length refs) 10 "number of item refs should be 10"
+         | Ok refs ->
+           Expect.equal (Seq.length refs) 10 "number of item refs should be 10"
          | Error e -> failtest e.Message
     ]
 
@@ -243,7 +275,9 @@ let tests =
 
         match items with
         | Ok items ->
-          Expect.equal (Option.get items.[0].ResourcePath) "s04.xhtml#pgepubid00492" "should get first item"
+          Expect.equal 
+            (Option.get items.[0].ResourcePath)
+            "s04.xhtml#pgepubid00492" "should get first item"
           let item = items.[0].SubItems.[2]
           Expect.equal item.Title "Abram S. Isaacs" "should 0 2 0 item"
         | Error e -> failtest e.Message
@@ -259,7 +293,8 @@ let tests =
         | Ok items ->
           let item = items.[1]
           let path = Option.get item.ResourcePath
-          Expect.equal path "EPUB/31/spec/epub-overview.html" "should get resource path"
+          Expect.equal 
+            path "EPUB/31/spec/epub-overview.html" "should get resource path"
           let str =
             container
             |> Result.bind (Container.getResource path)
@@ -268,7 +303,10 @@ let tests =
               reader.ReadToEnd ()
             )
           match str with
-          | Ok s -> Expect.stringStarts s """<?xml version="1.0" encoding="UTF-8"?>""" "should read toc item content"
+          | Ok s -> 
+            Expect.stringStarts 
+              s """<?xml version="1.0" encoding="UTF-8"?>"""
+              "should read toc item content"
           | Error e -> failtest e.Message
         | Error e -> failtest e.Message
 
@@ -298,7 +336,8 @@ let tests =
         let pages = pl |> Result.map Nav.PageList.getPages
         match pages with
         | Ok p ->
-          Expect.equal (Map.find "174" p) "s04.xhtml#Page_174" "should get page 174"
+          Expect.equal 
+            (Map.find "174" p) "s04.xhtml#Page_174" "should get page 174"
         | Error e -> failtest e.Message
     ]
 
@@ -311,8 +350,11 @@ let tests =
         match items with
         | Ok items ->
           Expect.equal (Array.length items) 2 "should get all items"
-          Expect.equal items.[0].SubItems.[0].Title "Chapter 1.1" "should get 0 1 title"
-          Expect.equal (Option.get items.[0].SubItems.[0].ResourcePath) "content.html#ch_1_1" "should get 0 0 href"
+          Expect.equal 
+            items.[0].SubItems.[0].Title "Chapter 1.1" "should get 0 1 title"
+          Expect.equal 
+            (Option.get items.[0].SubItems.[0].ResourcePath)
+            "content.html#ch_1_1" "should get 0 0 href"
         | Error e -> failtest e.Message
 
       testCase "page list" <| fun _ ->
