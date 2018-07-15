@@ -243,9 +243,9 @@ let tests =
 
         match items with
         | Ok items ->
-          Expect.equal (Option.get items.[0].resourcePath) "s04.xhtml#pgepubid00492" "should get first item"
-          let item = items.[0].subitems.[2]
-          Expect.equal item.title "Abram S. Isaacs" "should 0 2 0 item"
+          Expect.equal (Option.get items.[0].ResourcePath) "s04.xhtml#pgepubid00492" "should get first item"
+          let item = items.[0].SubItems.[2]
+          Expect.equal item.Title "Abram S. Isaacs" "should 0 2 0 item"
         | Error e -> failtest e.Message
 
       testCase "get toc item resource path" <| fun _ ->
@@ -258,7 +258,7 @@ let tests =
         match items with
         | Ok items ->
           let item = items.[1]
-          let path = Option.get item.resourcePath
+          let path = Option.get item.ResourcePath
           Expect.equal path "EPUB/31/spec/epub-overview.html" "should get resource path"
           let str =
             container
@@ -284,7 +284,7 @@ let tests =
         match items with
         | Ok i ->
           Expect.equal (Array.length i) 2 "should get all items"
-          Expect.equal i.[1].title "Begin Reading" "should get 2nd item"
+          Expect.equal i.[1].Title "Begin Reading" "should get 2nd item"
         | Error e -> failtest e.Message
 
       testCase "page list" <| fun _ ->
@@ -311,8 +311,8 @@ let tests =
         match items with
         | Ok items ->
           Expect.equal (Array.length items) 2 "should get all items"
-          Expect.equal items.[0].subitems.[0].title "Chapter 1.1" "should get 0 1 title"
-          Expect.equal (Option.get items.[0].subitems.[0].resourcePath) "content.html#ch_1_1" "should get 0 0 href"
+          Expect.equal items.[0].SubItems.[0].Title "Chapter 1.1" "should get 0 1 title"
+          Expect.equal (Option.get items.[0].SubItems.[0].ResourcePath) "content.html#ch_1_1" "should get 0 0 href"
         | Error e -> failtest e.Message
 
       testCase "page list" <| fun _ ->

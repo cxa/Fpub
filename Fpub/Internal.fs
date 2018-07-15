@@ -34,18 +34,18 @@ module internal Internal =
       | _ -> ``default``
 
   type DirContext<'a> =
-    { context: 'a
-    ; dir: string
+    { Context: 'a
+    ; Dir: string
     }
 
     static member Create context dir =
-      { context = context
-      ; dir = dir
+      { Context = context
+      ; Dir = dir
       }
 
     static member Create' dir context =
-      { context = context
-      ; dir = dir
+      { Context = context
+      ; Dir = dir
       }
 
   let flip f a b =

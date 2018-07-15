@@ -64,19 +64,19 @@ module Package =
     type T = internal T of DirContext<Element.T>
 
     let getElement (T dc) =
-      dc.context
+      dc.Context
 
     let private getDirectory (T dc) =
-      dc.dir
+      dc.Dir
 
     module Item =
       type T = internal T of DirContext<Element.T>
 
       let getElement (T dc) =
-        dc.context
+        dc.Context
 
       let private getDirectory (T dc) =
-        dc.dir
+        dc.Dir
 
       let getAttribute attribute t =
         t
@@ -194,10 +194,10 @@ module Package =
     withDoc <| XPathDocument (stream=stream) <| pkgDir
 
   let getElement (T dc) =
-    dc.context
+    dc.Context
 
   let getDirectory (T dc) =
-    dc.dir
+    dc.Dir
 
   let getVersion t =
     t

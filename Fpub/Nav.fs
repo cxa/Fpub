@@ -20,7 +20,7 @@ module Nav =
     type T = internal T of DirContext<Element.T>
 
     let getHeadingTitle (T dc) =
-      getHeadingTitle dc.context
+      getHeadingTitle dc.Context
 
     let rec private processLis dir lisResult =
       let map lis =
@@ -37,27 +37,27 @@ module Nav =
       Element.getFirstElement "a|span" li
       |> Result.mapOr (fun el ->
         Some
-          { title = Element.getValue el
-          ; resourcePath = Element.getAttribute "href" el |> Result.mapOr (fun h -> IO.Path.Combine (dir, h) |> Some) None
-          ; subitems = Element.getAllElements "ol/li" li |> processLis dir
+          { Title = Element.getValue el
+          ; ResourcePath = Element.getAttribute "href" el |> Result.mapOr (fun h -> IO.Path.Combine (dir, h) |> Some) None
+          ; SubItems = Element.getAllElements "ol/li" li |> processLis dir
           }
       ) None
 
     let getItems (T dc) =
-      processLis dc.dir <| Element.getAllElements "ol/li" dc.context
+      processLis dc.Dir <| Element.getAllElements "ol/li" dc.Context
 
   module Landmarks =
     type Item =
-      { title: string
-      ; ``type``: string
-      ; resourcePath: string
-      ; subitems: Item array
+      { Title: string
+      ; Type: string
+      ; ResourcePath: string
+      ; SubItems: Item array
       }
 
     type T = internal T of DirContext<Element.T>
 
     let getHeadingTitle (T dc) =
-      getHeadingTitle dc.context
+      getHeadingTitle dc.Context
 
     let rec private processLis dir lisResult =
       let map lis =
@@ -74,29 +74,29 @@ module Nav =
       |> Result.mapOr (fun a ->
         Result.mapOr2 (fun t h ->
           Some
-            { title = Element.getValue a
-            ; ``type`` = t
-            ; resourcePath = IO.Path.Combine (dir, h)
-            ; subitems = Element.getAllElements "ol/li" li |> processLis dir
+            { Title = Element.getValue a
+            ; Type = t
+            ; ResourcePath = IO.Path.Combine (dir, h)
+            ; SubItems = Element.getAllElements "ol/li" li |> processLis dir
             }
         ) None (Element.getAttribute "epub:type" a) (Element.getAttribute "href" a)
       ) None
     let getItems (T dc) =
-      processLis dc.dir <| Element.getAllElements "ol/li" dc.context
+      processLis dc.Dir <| Element.getAllElements "ol/li" dc.Context
 
   module PageList =
     type T = internal T of DirContext<Element.T>
 
     let getHeadingTitle (T dc) =
-      getHeadingTitle dc.context
+      getHeadingTitle dc.Context
 
     let getPages (T dc) =
-      dc.context
+      dc.Context
       |> Element.getAllElements "ol/li/a"
       |> Result.map (Seq.fold (fun acc a ->
           match Element.getAttribute "href" a with
           | Ok h ->
-            let resPath = IO.Path.Combine (dc.dir, h)
+            let resPath = IO.Path.Combine (dc.Dir, h)
             Map.add (Element.getValue a) resPath acc
           | _ -> acc
         ) Map.empty
@@ -121,10 +121,10 @@ module Nav =
       withDoc <| XPathDocument (stream=stream) <| docDir
 
   let getElement (T dc) =
-    dc.context
+    dc.Context
 
   let getDirectory (T dc) =
-    dc.dir
+    dc.Dir
 
   let getToc t =
     t

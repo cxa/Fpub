@@ -1,7 +1,7 @@
 namespace Fpub
 
 type TocItem =
-  { title: string
-  ; resourcePath: string option
-  ; subitems: TocItem array
+  { Title: string
+  ; ResourcePath: string option
+  ; SubItems: TocItem array
   }

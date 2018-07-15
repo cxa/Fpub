@@ -21,9 +21,9 @@ module Ncx =
       Result.mapOr2
         (fun title href ->
           Some
-            { title = title
-            ; resourcePath = IO.Path.Combine (dir, href) |> Some
-            ; subitems = Element.getAllElements "navPoint" np |> processNavPoints dir
+            { Title = title
+            ; ResourcePath = IO.Path.Combine (dir, href) |> Some
+            ; SubItems = Element.getAllElements "navPoint" np |> processNavPoints dir
             }
         )
         None
@@ -31,20 +31,20 @@ module Ncx =
         (Element.evalToString "string(content/@src)" np)
 
     let getItems (T dc) =
-      dc.context |> Element.getAllElements "navPoint" |> processNavPoints dc.dir
+      dc.Context |> Element.getAllElements "navPoint" |> processNavPoints dc.Dir
 
   module PageList =
     type T = internal T of DirContext<Element.T>
 
     let getPages (T dc) =
-      dc.context
+      dc.Context
       |> Element.getAllElements "pageTarget"
       |> Result.map (fun els ->
         Seq.foldBack (fun el acc ->
           let page = Element.evalToString "string(navLabel/text)" el
           let href = Element.evalToString "string(content/@src)" el
           match page, href with
-          | Ok k, Ok v -> Map.add k (IO.Path.Combine (dc.dir, v)) acc
+          | Ok k, Ok v -> Map.add k (IO.Path.Combine (dc.Dir, v)) acc
           | _ -> acc
         ) els Map.empty
       )
@@ -66,10 +66,10 @@ module Ncx =
     withDoc <| XPathDocument (stream=stream) <| docDir
 
   let getElement (T dc) =
-    dc.context
+    dc.Context
 
   let getDirectory (T dc) =
-    dc.dir
+    dc.Dir
 
   let getToc t =
     t
