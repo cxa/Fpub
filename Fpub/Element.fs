@@ -17,8 +17,7 @@ module Element =
     new (navigator: XPathNavigator, namespaces: (string * string) list) =
       let xnm = XmlNamespaceManager (NameTable ())
       namespaces |> List.iter (fun (prefix, uri) ->
-        xnm.AddNamespace (prefix, uri)
-      )
+        xnm.AddNamespace (prefix, uri))
       { navigator = navigator
         namespaces = namespaces
         namespaceManager = xnm
@@ -34,7 +33,7 @@ module Element =
           | "" -> ""
           | s ->
             if s.Contains "::" then
-              let regex = 
+              let regex =
                 Regex (@"(?<!attribute)(\:\:)([a-z*][\w\d-_\.]*)([=\s\[\]]|$)",
                        RegexOptions.IgnoreCase)
               regex.Replace(s, sprintf "$1%s:$2$3" defaultNsPrefix)
@@ -46,8 +45,7 @@ module Element =
               let regex2 =
                 Regex (@"(\[)([a-z*][\w\d-_\.]*)([\]=])",
                        RegexOptions.IgnoreCase)
-              regex2.Replace(s1, sprintf "$1%s:$2$3" defaultNsPrefix)
-          )
+              regex2.Replace(s1, sprintf "$1%s:$2$3" defaultNsPrefix))
         |> String.concat "/"
       )
       |> String.concat "|"
@@ -106,16 +104,15 @@ module Element =
       let node =
         xpather.navigator.SelectSingleNode
           (xpather.NormalizeXPath xpath, xpather.namespaceManager)
+        |> Option.ofObj
       match node with
-      | null -> failwith <| sprintf "No node found for %A" xpath
-      | n -> create xpather.namespaces n
+      | Some n -> create xpather.namespaces n
+      | None -> failwith <| sprintf "No node found for %A" xpath
 
   let getAllElements xpath (T xpather) =
     Result.attempt (fun () ->
       xpather.navigator.Select
-        (xpather.NormalizeXPath xpath, xpather.namespaceManager)
-    )
+        (xpather.NormalizeXPath xpath, xpather.namespaceManager))
     |> Result.map (
       Seq.cast<XPathNavigator>
-      >> Seq.map (create xpather.namespaces)
-    )
+      >> Seq.map (create xpather.namespaces))

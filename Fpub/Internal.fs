@@ -4,7 +4,7 @@ module internal Internal =
   module Result =
     let attempt f =
       try Ok <| f ()
-      with exn -> Error exn
+      with e -> Error e
 
     let attemptMap f r =
       r |> Result.bind (fun a ->
@@ -32,6 +32,13 @@ module internal Internal =
       match r1, r2 with
       | Ok o1, Ok o2 -> f o1 o2
       | _ -> ``default``
+
+    let (<!>) x f = Result.map f x // fmap
+
+    let (<*>) fr x = // apply
+      match fr with
+      | Ok f -> Result.map f x
+      | Error e -> Error e
 
   type DirContext<'a> =
     { Context: 'a

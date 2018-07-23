@@ -13,8 +13,7 @@ module Nav =
       if regex.IsMatch tagName then
         Element.evalToString "string(*[1])" element
       else
-        Result.attempt <| fun () -> failwith "No heading elements h[1-6] found"
-    )
+        Result.attempt <| fun () -> failwith "No heading elements h[1-6] found")
 
   module Toc =
     type T = internal T of DirContext<Element.T>
@@ -34,16 +33,16 @@ module Nav =
       | Ok items -> items
       | _ -> [||]
     and private processLi dir li =
+      let getResPath el =
+        Element.getAttribute "href" el 
+        |> Result.mapOr (fun h -> IO.Path.Combine (dir, h) |> Some) None
+      let makeItem el =
+        { Title = Element.getValue el
+          ResourcePath = getResPath el
+          SubItems = Element.getAllElements "ol/li" li |> processLis dir }
+        |> Some
       Element.getFirstElement "a|span" li
-      |> Result.mapOr (fun el ->
-        Some
-          { Title = Element.getValue el
-            ResourcePath = 
-              Element.getAttribute "href" el 
-              |> Result.mapOr (fun h -> IO.Path.Combine (dir, h) |> Some) None
-            SubItems = Element.getAllElements "ol/li" li |> processLis dir
-          }
-      ) None
+      |> Result.mapOr makeItem None
 
     let getItems (T dc) =
       processLis dc.Dir <| Element.getAllElements "ol/li" dc.Context
@@ -71,18 +70,18 @@ module Nav =
       Result.map map lisResult
       |> Result.getOr [||]
     and private processLi dir li =
+      let makeItem a =
+        let typ = Element.getAttribute "epub:type" a
+        let href = Element.getAttribute "href" a
+        Result.mapOr2 (fun t h ->
+          { Title = Element.getValue a
+            Type = t
+            ResourcePath = IO.Path.Combine (dir, h)
+            SubItems = Element.getAllElements "ol/li" li |> processLis dir }
+          |> Some) None typ href
       Element.getFirstElement "a" li
-      |> Result.mapOr (fun a ->
-        Result.mapOr2 (fun t h -> 
-          Some 
-            { Title = Element.getValue a
-              Type = t
-              ResourcePath = IO.Path.Combine (dir, h)
-              SubItems = Element.getAllElements "ol/li" li |> processLis dir }
-          ) 
-          None
-          (Element.getAttribute "epub:type" a) (Element.getAttribute "href" a)
-      ) None
+      |> Result.mapOr makeItem None
+
     let getItems (T dc) =
       processLis dc.Dir <| Element.getAllElements "ol/li" dc.Context
 

@@ -17,9 +17,8 @@ module Package =
     let getUniqueIdentifier (T element) =
       Element.evalToString "string(../@unique-identifier)" element
       |> Result.bind (fun pkguid ->
-        Element.evalToString 
-          (sprintf """string(dc:identifier[@id="%s"])""" pkguid) element
-      )
+        Element.evalToString
+          (sprintf """string(dc:identifier[@id="%s"])""" pkguid) element)
 
     let getReleaseIdentifier metadata =
       let (T element) = metadata
@@ -41,9 +40,7 @@ module Package =
           let scheme = Element.getAttribute "opf:scheme" n
           match scheme with
           | Ok s -> Map.add s (Element.getValue n) map
-          | _ -> map
-        ) Map.empty
-      )
+          | _ -> map) Map.empty)
 
     let getTitle (T element) =
       Element.evalToString "string(dc:title)" element
@@ -113,6 +110,28 @@ module Package =
       |> Element.getFirstElement (sprintf """item[@id="%s"]""" id)
       |> Result.map (DirContext<_>.Create' dir >> Item.T)
 
+    let getItemByHref href t =
+      let dir = getDirectory t
+      t
+      |> getElement
+      |> Element.getFirstElement (sprintf """item[@href="%s"]""" href)
+      |> Result.map (DirContext<_>.Create' dir >> Item.T)
+
+    let getItemByResourcePath (path:string) t =
+      let dir = getDirectory t
+      let href =
+        if String.IsNullOrEmpty dir
+        then path
+        else path.Substring <| dir.Length + 1
+      getItemByHref href t
+
+    let getItemByAbsoluteResourcePath (path:string) t =
+      let dir = getDirectory t
+      let href =
+        let extraPos = if String.IsNullOrEmpty dir then 1 else 2
+        path.Substring <| dir.Length + extraPos
+      getItemByHref href t
+
     let getNavItem t =
       let dir = getDirectory t
       t
@@ -128,7 +147,7 @@ module Package =
         |> Result.map (DirContext<_>.Create' dir >> Item.T)
       let getEpub2Cover () =
         element
-        |> Element.evalToString 
+        |> Element.evalToString
           """string(../metadata/meta[@name="cover"]/@content)"""
         |> Result.bind (flip getItemById t)
       getEpub3Cover ()
@@ -152,6 +171,7 @@ module Package =
       let getLinear (T element) =
         Element.getAttribute "linear" element
         |> Result.map (fun s -> match s with "yes" -> true | _ -> false)
+        |> Result.getOr true
 
       let getProperties (T element) =
         Element.getAttribute "properties" element
@@ -241,7 +261,7 @@ module Package =
     getSpine t
     |> Result.map Spine.getElement
     |> Result.bind (Element.getAttribute "toc")
-    |> Result.map (fun id -> 
+    |> Result.map (fun id ->
        sprintf """string(manifest/item[@id="%s"]/@href)""" id)
     |> Result.bind (fun xpath -> t |> getElement |> Element.evalToString xpath)
     |> Result.map (t |> getDirectory |> getResourcePath)

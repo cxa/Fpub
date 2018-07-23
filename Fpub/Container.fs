@@ -30,6 +30,9 @@ module Container =
       let entry = zip.GetEntry path
       entry.Open ()
 
+  let getResource' t path =
+    getResource path t
+
   let getPackagePaths container =
     container
     |> getResource "META-INF/container.xml"
@@ -40,8 +43,8 @@ module Container =
       xnm.AddNamespace ("ocf", "urn:oasis:names:tc:opendocument:xmlns:container")
       nav.Select ("//ocf:rootfile", xnm)
       |> Seq.cast<XPathNavigator>
-      |> Seq.map (fun nav -> 
-         nav.GetAttribute("full-path", String.Empty).Trim ())
+      |> Seq.map (fun nav ->
+        nav.GetAttribute("full-path", String.Empty).Trim ())
     )
 
   let getDefaultPackage container =
@@ -51,19 +54,16 @@ module Container =
     getPackagePaths container
     |> Result.attemptMap Seq.head
     |> Result.map (fun path ->
-      getResource path container, IO.Path.GetDirectoryName path
-    )
+      getResource path container, IO.Path.GetDirectoryName path)
     |> Result.bind withStream
 
   let getNav container =
     let withStream (streamResult, navDir) =
-      streamResult
-      |> Result.bind (flip Nav.withStream navDir)
+      streamResult |> Result.bind (flip Nav.withStream navDir)
     getDefaultPackage container
     |> Result.bind Package.getNavDocPath
-    |> Result.map (fun path ->
-      getResource path container, IO.Path.GetDirectoryName path
-    )
+    |> Result.attemptMap (fun path ->
+      getResource path container, IO.Path.GetDirectoryName path)
     |> Result.bind withStream
 
   let getNcx container =
@@ -72,7 +72,6 @@ module Container =
       |> Result.bind (flip Ncx.withStream ncxDir)
     getDefaultPackage container
     |> Result.bind Package.getNcxPath
-    |> Result.map (fun path ->
-      getResource path container, IO.Path.GetDirectoryName path
-    )
+    |> Result.attemptMap (fun path ->
+      getResource path container, IO.Path.GetDirectoryName path)
     |> Result.bind withStream

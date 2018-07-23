@@ -18,18 +18,17 @@ module Ncx =
         |> List.toArray
       ) [||] nps
     and private processNavPoint dir np =
-      Result.mapOr2
-        (fun title href ->
-          Some
-            { Title = title
-              ResourcePath = IO.Path.Combine (dir, href) |> Some
-              SubItems = 
-                Element.getAllElements "navPoint" np 
-                |> processNavPoints dir }
-        )
-        None
-        (Element.evalToString "string(navLabel/text)" np)
-        (Element.evalToString "string(content/@src)" np)
+      let text = Element.evalToString "string(navLabel/text)" np
+      let src = Element.evalToString "string(content/@src)" np
+      let subItems () = 
+        Element.getAllElements "navPoint" np 
+        |> processNavPoints dir
+      Result.mapOr2 (fun title href ->
+        Some
+          { Title = title
+            ResourcePath = IO.Path.Combine (dir, href) |> Some
+            SubItems = subItems ()}) None text src
+
 
     let getItems (T dc) =
       dc.Context |> Element.getAllElements "navPoint" |> processNavPoints dc.Dir
