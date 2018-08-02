@@ -25,5 +25,6 @@
     <Compile Include="Ncx.fs" />
     <Compile Include="Package.fs" />
     <Compile Include="Container.fs" />
+    <Compile Include="Epub.fs" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 namespace Fpub
 
 module internal Internal =
+  [<AutoOpen>]
   module Result =
     let attempt f =
       try Ok <| f ()
