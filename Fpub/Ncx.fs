@@ -4,6 +4,7 @@ module Ncx =
   open Internal
   open System
   open System.Xml.XPath
+  open System.Web
 
   module Toc =
     type T = internal T of DirContext<Element.T>
@@ -25,7 +26,7 @@ module Ncx =
         |> processNavPoints dir
       Result.mapOr2 (fun title href ->
         Some
-          { Title = title
+          { Title = title |> HttpUtility.HtmlDecode
             ResourcePath = IO.Path.Combine (dir, href) |> Some
             SubItems = subItems ()}) None text src
 

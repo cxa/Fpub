@@ -5,6 +5,7 @@ module Nav =
   open System
   open System.Xml.XPath
   open System.Text.RegularExpressions
+  open System.Web
 
   let private getHeadingTitle element =
     Element.evalToString "local-name(*)" element
@@ -37,7 +38,7 @@ module Nav =
         Element.getAttribute "href" el 
         |> Result.mapOr (fun h -> IO.Path.Combine (dir, h) |> Some) None
       let makeItem el =
-        { Title = Element.getValue el
+        { Title = Element.getValue el |> HttpUtility.HtmlDecode
           ResourcePath = getResPath el
           SubItems = Element.getAllElements "ol/li" li |> processLis dir }
         |> Some
@@ -74,7 +75,7 @@ module Nav =
         let typ = Element.getAttribute "epub:type" a
         let href = Element.getAttribute "href" a
         Result.mapOr2 (fun t h ->
-          { Title = Element.getValue a
+          { Title = Element.getValue a |> HttpUtility.HtmlDecode
             Type = t
             ResourcePath = IO.Path.Combine (dir, h)
             SubItems = Element.getAllElements "ol/li" li |> processLis dir }
