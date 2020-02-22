@@ -6,10 +6,13 @@ open FSharp.Core
 open Fpub
 open Package
 
+let getTestFilePath filename =
+    Path.Combine (__SOURCE_DIRECTORY__, filename)
+
 [<Tests>]
 let tests =
   let makeValidContainer () =
-    Container.withFile "assets/epub31-v31-20170105.epub"
+    Container.withFile (getTestFilePath "assets/epub31-v31-20170105.epub")
 
   let makePackage () =
     makeValidContainer () |> Result.bind Container.getDefaultPackage
@@ -38,7 +41,7 @@ let tests =
           "Should read epub31-v31-20170105.epub successfully"
 
       testCase "read invald epub" <| fun _ ->
-        let container = Container.withFile "assets/invalid.epub"
+        let container = Container.withFile (getTestFilePath "assets/invalid.epub")
         let isInvalid =
           match container with
           | Ok _ -> false
@@ -91,7 +94,7 @@ let tests =
       testCase "get ncx path" <| fun _ ->
         let path = makePackage () |> Result.bind Package.getNcxPath
         Expect.isError path "should be error for epub 3 that has no ncx"
-        let pkg = Package.withFile "assets/epub2.opf" ""
+        let pkg = Package.withFile (getTestFilePath "assets/epub2.opf") ""
         let path = pkg |> Result.bind Package.getNcxPath
         match path with
         | Ok p -> Expect.equal p "toc.ncx" "should get ncx path"
@@ -100,7 +103,7 @@ let tests =
 
     testList "Metadata" [
       testCase "get all identifiers" <| fun _ ->
-        let pkg = Package.withFile "assets/test.opf" ""
+        let pkg = Package.withFile (getTestFilePath "assets/test.opf") ""
         let idsR = 
           pkg 
           |> Result.bind Package.getMetadata 
@@ -114,7 +117,7 @@ let tests =
         | Error e -> failtest e.Message
 
       testCase "get scheme identifiers" <| fun _ ->
-        let pkg = Package.withFile "assets/test.opf" ""
+        let pkg = Package.withFile (getTestFilePath "assets/test.opf") ""
         let idsR = 
           pkg 
           |> Result.bind Package.getMetadata 
@@ -211,13 +214,13 @@ let tests =
         | _ -> failtest "Fail to get item by id"
 
       testCase "get epub 3 cover image href" <| fun _ ->
-        let href = Package.withFile "assets/test.opf" "" |> getCoverHref
+        let href = Package.withFile (getTestFilePath "assets/test.opf") "" |> getCoverHref
         match href with
         | Ok h -> Expect.equal h "cover.jpg" "should get cover image href"
         | Error e -> failtest e.Message
 
       testCase "get epub 2 cover image href" <| fun _ ->
-        let href = Package.withFile "assets/epub2.opf" "" |> getCoverHref
+        let href = Package.withFile (getTestFilePath "assets/epub2.opf") "" |> getCoverHref
         match href with
         | Ok h -> Expect.equal h "cover.png" "should get cover image href"
         | Error e -> failtest e.Message
@@ -250,17 +253,17 @@ let tests =
 
     testList "Nav" [
       testCase "init nav" <| fun _ ->
-        Nav.withFile "assets/nav.xhtml" ""
+        Nav.withFile (getTestFilePath "assets/nav.xhtml") ""
         |> Flip.Expect.isOk "should init nav"
 
       testCase "get toc" <| fun _ ->
-        Nav.withFile "assets/nav.xhtml" ""
+        Nav.withFile (getTestFilePath "assets/nav.xhtml") ""
         |> Result.bind Nav.getToc
         |> Flip.Expect.isOk "should get toc"
 
       testCase "get toc heading" <| fun _ ->
         let title =
-          Nav.withFile "assets/nav.xhtml" ""
+          Nav.withFile (getTestFilePath "assets/nav.xhtml") ""
           |> Result.bind Nav.getToc
           |> Result.bind Nav.Toc.getHeadingTitle
         match title with
@@ -269,7 +272,7 @@ let tests =
 
       testCase "get all toc items" <| fun _ ->
         let items =
-          Nav.withFile "assets/nav.xhtml" ""
+          Nav.withFile (getTestFilePath "assets/nav.xhtml") ""
           |> Result.bind Nav.getToc
           |> Result.map Nav.Toc.getItems
 
@@ -312,7 +315,7 @@ let tests =
 
       testCase "landmarks" <| fun _ ->
         let lm =
-          Nav.withFile "assets/nav.xhtml" ""
+          Nav.withFile (getTestFilePath "assets/nav.xhtml") ""
           |> Result.bind Nav.getLandmarks
         let hd = lm |> Result.bind Nav.Landmarks.getHeadingTitle
         match hd with
@@ -327,7 +330,7 @@ let tests =
 
       testCase "page list" <| fun _ ->
         let pl =
-          Nav.withFile "assets/nav.xhtml" ""
+          Nav.withFile (getTestFilePath "assets/nav.xhtml") ""
           |> Result.bind Nav.getPageList
         let hd = pl |> Result.bind Nav.PageList.getHeadingTitle
         match hd with
@@ -344,7 +347,7 @@ let tests =
     testList "Ncx" [
       testCase "toc" <| fun _ ->
         let items =
-          Ncx.withFile "assets/epub2.ncx" ""
+          Ncx.withFile (getTestFilePath "assets/epub2.ncx") ""
           |> Result.bind Ncx.getToc
           |> Result.map Ncx.Toc.getItems
         match items with
@@ -359,7 +362,7 @@ let tests =
 
       testCase "page list" <| fun _ ->
         let pages =
-          Ncx.withFile "assets/epub2.ncx" ""
+          Ncx.withFile (getTestFilePath "assets/epub2.ncx") ""
           |> Result.bind Ncx.getPageList
           |> Result.map Ncx.PageList.getPages
         match pages with
