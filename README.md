@@ -182,4 +182,4 @@ MIT
 
 - Blog: [realazy.com](https://realazy.com) (Chinese)
 - Github: [@cxa](https://github.com/cxa)
-- Twitter: [@\_cxa](https://twitter.com/_cxa) (Chinese mainly)
+- X: [@\_realazy](https://x.com/_realazy) (Chinese mainly)
